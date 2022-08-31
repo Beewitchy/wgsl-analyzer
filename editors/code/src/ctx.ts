@@ -129,7 +129,14 @@ async function resolveImport(content: string): Promise<string> {
             throw new Error(`unknown scheme \`${uri.scheme}\``);
         }
     } else {
-        return content;
+        const folder = vscode.workspace.workspaceFolders?.[0];
+        if (folder) {
+            let absolute = vscode.Uri.joinPath(folder.uri, content);
+            return promisify(readFile)(absolute.fsPath, "utf-8");
+        }
+        else {
+            return content;
+        }
     }
 }
 
